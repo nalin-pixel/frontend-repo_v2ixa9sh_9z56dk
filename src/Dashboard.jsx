@@ -181,6 +181,16 @@ function AIActions({ onNewData, households }){
     } catch(e){ alert(e.message) } finally { setLoading(false) }
   }
 
+  async function seed(){
+    setLoading(true)
+    try{
+      const res = await fetch(`${API_BASE}/api/seed/demo`, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ count_clients: 20 }) })
+      const json = await res.json()
+      onNewData?.()
+      alert(json.message || 'Seeded demo data')
+    } catch(e){ alert(e.message) } finally { setLoading(false) }
+  }
+
   return (
     <div className="flex flex-col sm:flex-row gap-2">
       <select className="input" value={householdId} onChange={e=>setHouseholdId(e.target.value)}>
@@ -193,6 +203,7 @@ function AIActions({ onNewData, households }){
         <button disabled={loading} className="btn-secondary" onClick={()=>call('/api/ai/tax/optimization',{ household_id: householdId || null, year })}>Tax Optimization</button>
       </div>
       <button disabled={loading} className="btn-secondary" onClick={()=>call('/api/ai/estate/plan',{ household_id: householdId || null, goals: [], facts: {} })}>Estate Plan Review</button>
+      <button disabled={loading} className="btn-ghost" onClick={seed}>Seed 20 Demo Clients</button>
     </div>
   )
 }
@@ -240,59 +251,59 @@ export default function Dashboard(){
         <Section title="Households">
           <SimpleTable
             items={households.data}
-            columns={[
+            columns=[
               { key: 'name', label: 'Name' },
               { key: 'risk_profile', label: 'Risk' },
               { key: 'members', label: 'Members', render: (v) => Array.isArray(v) ? v.length : 0 },
-            ]}
+            ]
           />
         </Section>
 
         <Section title="Clients">
           <SimpleTable
             items={clients.data}
-            columns={[
+            columns=[
               { key: 'first_name', label: 'First' },
               { key: 'last_name', label: 'Last' },
               { key: 'email', label: 'Email' },
               { key: 'household_id', label: 'Household' },
-            ]}
+            ]
           />
         </Section>
 
         <Section title="Tasks">
           <SimpleTable
             items={tasks.data}
-            columns={[
+            columns=[
               { key: 'title', label: 'Title' },
               { key: 'status', label: 'Status' },
               { key: 'priority', label: 'Priority' },
-            ]}
+            ]
           />
         </Section>
 
         <Section title="Recommendations">
           <SimpleTable
             items={recos.data}
-            columns={[
+            columns=[
               { key: 'category', label: 'Category' },
               { key: 'title', label: 'Title' },
               { key: 'status', label: 'Status' },
               { key: 'impact_score', label: 'Impact' },
-            ]}
+            ]
           />
         </Section>
 
         <Section title="Compliance Activity Log">
           <SimpleTable
             items={compliance.data}
-            columns={[
+            columns=[
               { key: 'timestamp', label: 'Time', render: (v) => v ? new Date(v).toLocaleString() : '' },
               { key: 'action', label: 'Action' },
               { key: 'resource_type', label: 'Resource' },
               { key: 'resource_id', label: 'ID' },
               { key: 'labels', label: 'Labels', render: (v) => Array.isArray(v) ? v.join(', ') : '' },
-            ]}
+            ]
           />
         </Section>
 
